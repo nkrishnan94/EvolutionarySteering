@@ -15,6 +15,11 @@ from copy import deepcopy
 from random import random
 from random import sample
 
+import matplotlib.pyplot as plt
+import networkx as nx
+from matplotlib import cm
+import matplotlib as mpl
+
 #==============================================================================#
 # Helper functions
 #==============================================================================#
@@ -89,12 +94,23 @@ class FitnessLandscape:
 
 	def getGlobalPeak(self):
 		return convertIntToGenotype(np.argmax(self.landscape), self.genotypeLength())
+    
+	def getGlobalValley(self):
+		return convertIntToGenotype(np.argmin(self.landscape), self.genotypeLength())
 
 	def getLowestFitnessPeak(self):
 		# Finds the peaks of the landscape
 		peak_genotypes = self.getPeaks()
 		lowest_peak_genotype = peak_genotypes[np.argmin([self.getFitness(g) for g in peak_genotypes])]
 		return lowest_peak_genotype
+	def drawLandscape(self):
+		fig,ax =plt.subplots(figsize=(16,16))
+		G = nx.hypercube_graph(self.genotypeLength())
+		pos =nx.spring_layout(G,iterations=200)
+		labe = nx.draw_networkx_labels(G,pos=pos)
+		fits= [self.getFitness(convertIntToGenotype(i,self.genotypeLength())) for i in range(2**self.genotypeLength())]
+		nx.draw(G,pos=pos, node_color=fits,ax=ax,node_size=1000,edge_color='grey',cmap=plt.cm.Blues)
+		plt.show()
 
 #==============================================================================#
 
@@ -160,7 +176,7 @@ def geneWeights(K,N):
 # Given a genotype length (N) and the number of alleles (K) this function randomly choses K alleles 
 # from positions {1,...N}\{i} which interact epistatically with the ith position	
 def buildInfringersTable(N,K):
-	return [sample(range(i)+range(i+1,N),K) for i in range(N)]
+	return [sample(list(range(i))+list(range(i+1,N)),K) for i in range(N)]
 
 # Builds a tuple for look up in the fitness table from the infringers list
 def buildTuple(allele, i, infringers):
