@@ -112,6 +112,10 @@ class FitnessLandscape:
 		nx.draw(G,pos=pos, node_color=fits,ax=ax,node_size=1000,edge_color='grey',cmap=plt.cm.Blues)
 		plt.show()
 
+
+
+
+
 #==============================================================================#
 
 #==============================================================================#
